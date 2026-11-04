@@ -176,7 +176,7 @@ class Hessian:
         #     Q = self.hess_dict['normal_modes'][:,Qn]
         
         # Mw_xyz = np.repeat(np.array(Mw), 3)
-    pass
+        pass
 
     def write_hess():
         pass
@@ -196,35 +196,6 @@ class Hessian:
         plt.ylabel("Number of States", fontsize=12)
         plt.show()
 
-# %%
-''' All Code below is for testing purposes'''
 
-H2 = Hessian(r"C:\Users\apelr\OneDrive - University of New Mexico\Python Scripts\Josh_Scripts\H2_vib.hess")
-# BDT = Hessian(r"C:\Users\apelr\OneDrive - University of New Mexico\Python Scripts\Josh_Scripts\BpyPtBDT_fine_vib.hess")
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-# Combine the directory with your filename
-file_path = os.path.join(script_dir, "BpyPtBDT_fine_vib.hess")
-# Pass the dynamic path to your Hessian function
-BDT = Hessian(file_path)
-
-                
-# Calculate the displaced geometry
-
-# script testing
-# print(H2.step_xyz(-1, 1))
-# print(H2.hess_dict['normal_modes'])
-# H2.write_xyz(filename="test_H2", geometry=H2.step_xyz(-1, 1), )
-
-# print(BDT.step_xyz(-1, 1))
-# print(BDT.hess_dict['normal_modes'])
-# print(BDT.hess_dict['atomic_coords'].reshape(-1,3))
-# print(BDT.hess_dict['atomic_symbols'])
-# BDT.write_xyz(filename="test_BDT", geometry=BDT.step_xyz(14, 2))
-# print(BDT.hess_dict['vibrational_frequencies'])
-
-# BDT.gen_xyz_inp(5, 7, n_steps=3, max_displacement=3)
-
-BDT.dos_histplot(bin_size=20)
 
             

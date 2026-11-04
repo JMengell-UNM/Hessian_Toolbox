@@ -1,10 +1,14 @@
 # %%
+'''
+Empty docstring
 
-import numpy as np
-import matplotlib.pyplot as plt
-import os
+'''
 
 class Hessian:
+    #Import Strings are now inherited by consequent scripts
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import os
     '''Adapted from Indu's LLM generated code
     '''
     def __init__(self, file_path):

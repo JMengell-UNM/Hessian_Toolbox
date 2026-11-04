@@ -159,6 +159,36 @@ class Hessian:
                 #self.write_inp(filename=Title)
                 ''' iterate this such that all .inp files are written simultainiously'''
                 
+    def gen_phase_displaced_oscilations(self,*Qns):
+        '''
+        Combines two normal modes denoted by indexes Qn with a pi/n phase
+        separation.
+        '''
+        
+        num_modes=len(Qns)
+        phase_space = [0 + n*2*np.pi/num_modes for n in range(num_modes)]
+        
+        
+        displacements = []
+        time = np.linspace(0, 6, 1500)
+        
+        for idx in range(len(Qns)):
+            Qn = Qns[idx]
+            MW_xyz = np.repeat(np.array(self.hess_dict['molecular_weights']), 3)
+            MW_disp = self.hess_dict['normal_modes'][:,Qn]
+            Disp = np.reshape(MW_disp/np.sqrt(MW_xyz),(-1,1))
+            w = self.hess_dict['vibrational_frequencies'][Qn]
+            
+            f_t = Disp*np.sin(w*time + phase_space[idx])
+            displacements.append(f_t)
+            
+        return displacements
+            
+    def plot_net_oscillation(self,displaced_oscilations):
+        '''
+        Takes the return value of gen_phase_displaced_oscilations as an argument
+        '''
+        pass
         
 
         
@@ -177,7 +207,6 @@ class Hessian:
         plt.xlabel(r'Wavenumber ($cm^{-1}$)', fontsize=12)
         plt.ylabel("Number of States", fontsize=12)
         plt.show()
-
 
 
             

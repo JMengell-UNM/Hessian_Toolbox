@@ -3,15 +3,18 @@
 Empty docstring
 
 '''
-
+#Listed here so IDE doesn't throw a fit
+import numpy as np
+import matplotlib.pyplot as plt
+import os
 class Hessian:
-    #Import Strings are now inherited by consequent scripts
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import os
     '''Adapted from Indu's LLM generated code
     '''
     def __init__(self, file_path):
+        #Import Strings are now inherited by consequent scripts
+        import numpy as np
+        import matplotlib.pyplot as plt
+        import os
         self.file_path=file_path
         self.hess_dict={}
         
@@ -136,6 +139,15 @@ class Hessian:
             f.write(f"*xyzfile {charge} {mult} {filename}.xyz\n")
 
     def gen_normal_mode_xyz(self, *Qns, n_steps=None, max_displacement=1):
+        '''
+        for Qn in Qns:
+            displacement_grid= [ 'a function of stepsize and max displacement']
+
+            for D in displacement_grid:
+                displaced_geom = self.step_xyz(Qn, D)
+                self.write_xyz(displaced_geom, target_dir)
+        
+        '''
         step_size = max_displacement / n_steps
         step_list = np.linspace(0, max_displacement, num=n_steps, endpoint=True)
         for Qi in Qns:
@@ -147,44 +159,10 @@ class Hessian:
                 #self.write_inp(filename=Title)
                 ''' iterate this such that all .inp files are written simultainiously'''
                 
-        '''
-        for Qn in Qns:
-            displacement_grid= [ 'a function of stepsize and max displacement']
-
-            for D in displacement_grid:
-                displaced_geom = self.step_xyz(Qn, D)
-                self.write_xyz(displaced_geom, target_dir)
         
-        '''
 
-    def gen_normal_mode_inputs(self, *Qns, n_steps=None, max_displacement=1):
-        step_list = np.linspace(0, max_displacement, num=n_steps, endpoint=True)
-        for Qi in Qns:
-            for step in step_list:
-                Title = f"{step}_step_displacement_vib_mode_{Qi}" # Iteriative file title for the given mode and step
-                self.write_inp(filename=Title)
-
-    def gen_xyz_inp(self, *Qns, n_steps=None, max_displacement=1):
-        self.gen_normal_mode_xyz(*Qns, n_steps=n_steps, max_displacement=max_displacement)
-        self.gen_normal_mode_inputs(*Qns, n_steps=n_steps, max_displacement=max_displacement)
-
-        '''WORKS'''
-
-    def combine_freq(self, *Qns, ):
-         ''' 
-        Qn is the index value of the vibrational mode being called. 
-        '''
-        # Mw = self.hess_dict['molecular_weights']
-        # R = self.hess_dict['atomic_coords']
-        # for Qn in Qns:
-        #     Q = self.hess_dict['normal_modes'][:,Qn]
         
-        # Mw_xyz = np.repeat(np.array(Mw), 3)
-        pass
-
-    def write_hess():
-        pass
-
+    
     def dos_histplot(self, bin_size=50):
         all_freq = self.hess_dict['vibrational_frequencies']
         all_freq = np.array(all_freq, dtype=float).flatten()

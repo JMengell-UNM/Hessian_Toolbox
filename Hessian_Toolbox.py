@@ -172,8 +172,7 @@ class Hessian:
         displacements = []
         time = np.linspace(0, 6, 1500)
         
-        for idx in range(len(Qns)):
-            Qn = Qns[idx]
+        for idx, Qn in enumerate(Qns):
             MW_xyz = np.repeat(np.array(self.hess_dict['molecular_weights']), 3)
             MW_disp = self.hess_dict['normal_modes'][:,Qn]
             Disp = np.reshape(MW_disp/np.sqrt(MW_xyz),(-1,1))

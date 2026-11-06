@@ -14,4 +14,4 @@ H2O = Hessian('./Test_Hessians/H2O_vib.hess')
 from Hessian_Toolbox import Hessian
 benzene = Hessian('./Test_Hessians/benzene_Zindo_Vib.hess')
 
-benzene.combine_normal_modes(6,7,8)
+benzene.gen_phase_displaced_oscilations(6,7,8)

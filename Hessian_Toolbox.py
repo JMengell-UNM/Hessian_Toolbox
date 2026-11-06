@@ -165,11 +165,16 @@ class Hessian:
         separation.
         '''
         
+        #Phase space is distributed from 0 to pi/2 evenly spaced for the number
+        #of modes specified.
         num_modes=len(Qns)
-        phase_space = [0 + n*2*np.pi/num_modes for n in range(num_modes)]
+        phase_space = [0 + n*np.pi/((num_modes-1)*2) for n in range(num_modes)]
         
-        
+        #Container for displacments corresponding to Qn in Qns.
         displacements = []
+        
+        #The time space is currently arbitrary, it should eventually be 
+        #proportional to the frequency of the normal modes requested.
         time = np.linspace(0, 6, 1500)
         
         for idx, Qn in enumerate(Qns):
@@ -178,10 +183,10 @@ class Hessian:
             #Pulls the Mass Weighted Normal Mode
             MW_disp = self.hess_dict['normal_modes'][:,Qn]
             #Removes the mass weighting the normal mode - Transposes it so it is
-            #a column vector
+            #a column vector.
             Disp = np.reshape(MW_disp/np.sqrt(MW_xyz),(-1,1))
             #Pulls the frequency of the normal mode for the Harmonic Oscilator 
-            #Eqn
+            #Eqn.
             w = self.hess_dict['vibrational_frequencies'][Qn]
             
             #The Equation f(t) here is that of a simple harmonic oscilator,

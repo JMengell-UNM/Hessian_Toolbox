@@ -173,17 +173,29 @@ class Hessian:
         time = np.linspace(0, 6, 1500)
         
         for idx, Qn in enumerate(Qns):
+            #Expands Mol Weights for each dimension in the Norm Modes
             MW_xyz = np.repeat(np.array(self.hess_dict['molecular_weights']), 3)
+            #Pulls the Mass Weighted Normal Mode
             MW_disp = self.hess_dict['normal_modes'][:,Qn]
+            #Removes the mass weighting the normal mode - Transposes it so it is
+            #a column vector
             Disp = np.reshape(MW_disp/np.sqrt(MW_xyz),(-1,1))
+            #Pulls the frequency of the normal mode for the Harmonic Oscilator 
+            #Eqn
             w = self.hess_dict['vibrational_frequencies'][Qn]
             
+            #The Equation f(t) here is that of a simple harmonic oscilator,
+            #the normal mode in units of displacement is a column vector and 
+            #our time variable is a horizontal vector. Therefore, f(t) is a 
+            #two dimensional array where each column is the displacement at
+            #the timestep with the corresponding index.
             f_t = Disp*np.sin(w*time + phase_space[idx])
+            #Each array is then collected in the list, 'displacements'.
             displacements.append(f_t)
             
-        return displacements
+        return displacements, time
             
-    def plot_net_oscillation(self,displaced_oscilations):
+    def plot_net_oscillation(self,displaced_oscilations,time):
         '''
         Takes the return value of gen_phase_displaced_oscilations as an argument
         '''

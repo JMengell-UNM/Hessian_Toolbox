@@ -1,2 +1,3 @@
-#None
+#Add Files to ignore
 __pycache__
+local_dir/*

@@ -219,7 +219,40 @@ class Hessian:
             displacements.append(f_t)
             
         return displacements, time
-            
+    
+    def Chiral_Hessian_gen(self,
+                           Qna,Qnb):
+        '''
+        This function is designed to be used in tandem with some screening 
+        methedology to create a dictionary to be taken as a keyword argument of 
+        the write Hessian function which will yeild a Hessian which can be 
+        read by Chemcraft.
+        '''
+        chiral_dict={}
+        
+        displacements, time = self.gen_phase_displaced_oscilations(Qna,Qnb)
+        
+        Qa, Qb = displacements
+        
+        Q = Qa+Qb
+        
+        #Pulling the size of the matrix
+        dim=max(Q.shape)
+        #Filling the rest of the Matrix with zeros
+        new_normal_modes=np.zeros((dim,dim))
+        new_normal_modes[:Q.shape[0],:Q.shape[1]]=Q
+        
+        #Filling the rest of the List with zeros
+        time_as_freq = [0.0 for n in range(dim)]
+        for idx, n in enumerate(time):
+            time_as_freq[idx]=n
+        
+        
+        chiral_dict['vibrational_frequencies']=time_as_freq
+        chiral_dict['normal_modes']=new_normal_modes
+               
+        return chiral_dict
+        
     def plot_net_oscillation(self,displaced_oscilations,time):
         '''
         Takes the return value of gen_phase_displaced_oscilations as an argument

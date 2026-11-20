@@ -2,20 +2,23 @@
 from copy import deepcopy
 import numpy as np
 
-def _write_matrix(f, M, block=5):
-    """ORCA-style matrix: blocks of 5 columns, each preceded by a header line of column indices."""
-    n_rows, n_cols = M.shape
-    for c0 in range(0, n_cols, block):
-        c1 = min(c0 + block, n_cols)
-        f.write("".join(f"{c:>19d}" for c in range(c0, c1)) + "\n")
-        for r in range(n_rows):
-            f.write(f"{r:>5d}" + "".join(f"{M[r, c]:>19.10E}" for c in range(c0, c1)) + "\n")
+
 
 
 def write_hess(self, out_path, opp_dict=None):
     """Write a simplified .hess file (like Minimal_H2_vib.hess) from self.hess_dict.
     opp_dict: optional {key: new_value} overrides; sizes must match the original.
     """
+    
+    def _write_matrix(f, M, block=5):
+        """ORCA-style matrix: blocks of 5 columns, each preceded by a header line of column indices."""
+        n_rows, n_cols = M.shape
+        for c0 in range(0, n_cols, block):
+            c1 = min(c0 + block, n_cols)
+            f.write("".join(f"{c:>19d}" for c in range(c0, c1)) + "\n")
+            for r in range(n_rows):
+                f.write(f"{r:>5d}" + "".join(f"{M[r, c]:>19.10E}" for c in range(c0, c1)) + "\n")
+    
     d = deepcopy(self.hess_dict)
     if opp_dict:
         unknown = set(opp_dict) - set(d)

@@ -7,6 +7,7 @@ Empty docstring
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from copy import deepcopy
 class Hessian:
     '''Adapted from Indu's LLM generated code
     '''
@@ -15,6 +16,7 @@ class Hessian:
         import numpy as np
         import matplotlib.pyplot as plt
         import os
+        from copy import deepcopy
         self.file_path=file_path
         self.hess_dict={}
         
@@ -195,7 +197,7 @@ class Hessian:
             
             #Time is currently in seconds. These vibrations are extremely fast,
             #it may make more sense to convert to ps in the future.
-            time = np.linspace(start, end, 6)
+            time = np.linspace(start, end, 36)
         
         for idx, Qn in enumerate(Qns):
             #Expands Mol Weights for each dimension in the Norm Modes
@@ -254,7 +256,65 @@ class Hessian:
         chiral_dict['normal_modes']=new_normal_modes
                
         return chiral_dict
+    
+    def write_hess(self, out_path, opp_dict=None):
+        """Write a simplified .hess file (like Minimal_H2_vib.hess) from self.hess_dict.
+        opp_dict: optional {key: new_value} overrides; sizes must match the original.
+        """
         
+        def _write_matrix(f, M, block=5):
+            """ORCA-style matrix: blocks of 5 columns, each preceded by a header line of column indices."""
+            n_rows, n_cols = M.shape
+            for c0 in range(0, n_cols, block):
+                c1 = min(c0 + block, n_cols)
+                f.write("".join(f"{c:>19d}" for c in range(c0, c1)) + "\n")
+                for r in range(n_rows):
+                    f.write(f"{r:>5d}" + "".join(f"{M[r, c]:>19.10E}" for c in range(c0, c1)) + "\n")
+        
+        d = deepcopy(self.hess_dict)
+        if opp_dict:
+            unknown = set(opp_dict) - set(d)
+            if unknown:
+                raise KeyError(f"Keys not in hess_dict: {unknown}")
+            d.update(deepcopy(opp_dict))
+
+        symbols = d["atomic_symbols"]
+        n = len(symbols)
+        n3 = 3 * n
+
+        modes  = np.asarray(d["normal_modes"], float)
+        freqs  = np.asarray(d["vibrational_frequencies"], float)
+        coords = np.asarray(d["atomic_coords"], float).reshape(-1)
+        masses = np.asarray(d["molecular_weights"], float)
+
+        for name, got, want in [("normal_modes", modes.shape, (n3, n3)),
+                                ("vibrational_frequencies", freqs.shape, (n3,)),
+                                ("atomic_coords", coords.shape, (n3,)),
+                                ("molecular_weights", masses.shape, (n,))]:
+            if got != want:
+                raise ValueError(f"{name}: shape {got}, expected {want}")
+
+        with open(out_path, "w") as f:
+            f.write("$orca_hessian_file\n\n")
+
+            f.write(f"$hessian\n{n3}\n")
+            _write_matrix(f, np.zeros((n3, n3)))      # zeros, like the minimal H2 file
+
+            f.write(f"\n$vibrational_frequencies\n{n3}\n")
+            for i, v in enumerate(freqs):
+                f.write(f"{i:>5d}{v:>26.16f}\n")
+
+            f.write(f"\n$normal_modes\n{n3} {n3}\n")
+            _write_matrix(f, modes)
+
+            f.write(f"\n$atoms\n{n}\n")
+            for sym, m, (x, y, z) in zip(symbols, masses, coords.reshape(-1, 3)):
+                f.write(f" {sym:<2s}{m:>12.5f}{x:>20.12f}{y:>20.12f}{z:>20.12f}\n")
+
+            f.write(f"\n$frequency_scale_factor\n  {d.get('frequency_scale_factor', 1.0):.6f}\n")
+            f.write("\n$end\n")                        # blank line before $end is needed by the parser
+
+    
     def plot_net_oscillation(self,displaced_oscilations,time):
         '''
         Takes the return value of gen_phase_displaced_oscilations as an argument
@@ -279,5 +339,3 @@ class Hessian:
         plt.ylabel("Number of States", fontsize=12)
         plt.show()
 
-
-            

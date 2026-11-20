@@ -238,6 +238,7 @@ class Hessian:
         
         #Pulling the size of the matrix
         dim=max(Q.shape)
+        #Zeros are on the Left, may cause issue with Chemcraft    
         #Filling the rest of the Matrix with zeros
         new_normal_modes=np.zeros((dim,dim))
         new_normal_modes[:Q.shape[0],:Q.shape[1]]=Q
@@ -247,8 +248,9 @@ class Hessian:
         for idx, n in enumerate(time):
             time_as_freq[idx]=n
         
-        
+        #The frequencies are stored in a list of length 3N - same as in the hess_dict
         chiral_dict['vibrational_frequencies']=time_as_freq
+        #The normal modes are stored in a numpy ndarray with shape(3N,3N) - same as in the hess_dict
         chiral_dict['normal_modes']=new_normal_modes
                
         return chiral_dict

@@ -193,6 +193,8 @@ class Hessian:
             start = -1*phase/l_freq
             end   = (2*pi-phase)/l_freq
             
+            #Time is currently in seconds. These vibrations are extremely fast,
+            #it may make more sense to convert to ps in the future.
             time = np.linspace(start, end, 6)
         
         for idx, Qn in enumerate(Qns):

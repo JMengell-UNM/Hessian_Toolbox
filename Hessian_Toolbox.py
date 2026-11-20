@@ -159,11 +159,16 @@ class Hessian:
                 #self.write_inp(filename=Title)
                 ''' iterate this such that all .inp files are written simultainiously'''
                 
-    def gen_phase_displaced_oscilations(self,*Qns):
+    def gen_phase_displaced_oscilations(self,*Qns,
+                                        time=None):
         '''
-        Combines two normal modes denoted by indexes Qn with a pi/n phase
+        Combines two normal modes denoted by indexes Qn with a pi/(2 * n-1) phase
         separation.
         '''
+        #Constants
+        pi=np.pi
+        c = 299792458*100 #cm·s-1
+        
         
         #Phase space is distributed from 0 to pi/2 evenly spaced for the number
         #of modes specified.
@@ -173,9 +178,22 @@ class Hessian:
         #Container for displacments corresponding to Qn in Qns.
         displacements = []
         
-        #The time space is currently arbitrary, it should eventually be 
-        #proportional to the frequency of the normal modes requested.
-        time = np.linspace(0, 6, 1500)
+        #If no time is specified we default to one period of the lower frequency
+        #Displacement
+        if time == None:
+            #pulls linear frequencies and converts them to angular
+            freqs=[2*pi*c*self.hess_dict['vibrational_frequencies'][Qn] for Qn in Qns]
+            
+            l_freq=min(freqs)
+            phase=phase_space[freqs.index(l_freq)]
+            
+            
+            #Defines the start and stop times where the lowest freq will yeild 
+            #sin(0) and sin(2pi)
+            start = -1*phase/l_freq
+            end   = (2*pi-phase)/l_freq
+            
+            time = np.linspace(start, end, 6)
         
         for idx, Qn in enumerate(Qns):
             #Expands Mol Weights for each dimension in the Norm Modes
@@ -187,7 +205,7 @@ class Hessian:
             Disp = np.reshape(MW_disp/np.sqrt(MW_xyz),(-1,1))
             #Pulls the frequency of the normal mode for the Harmonic Oscilator 
             #Eqn.
-            w = self.hess_dict['vibrational_frequencies'][Qn]
+            w = 2*pi*c*self.hess_dict['vibrational_frequencies'][Qn]
             
             #The Equation f(t) here is that of a simple harmonic oscilator,
             #the normal mode in units of displacement is a column vector and 

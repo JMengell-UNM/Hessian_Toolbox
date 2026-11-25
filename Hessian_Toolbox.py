@@ -170,6 +170,7 @@ class Hessian:
         #Constants
         pi=np.pi
         c = 299792458*100 #cm·s-1
+        limit = len(self.hess_dict['vibrational_frequencies'])
         
         
         #Phase space is distributed from 0 to pi/2 evenly spaced for the number
@@ -197,7 +198,7 @@ class Hessian:
             
             #Time is currently in seconds. These vibrations are extremely fast,
             #it may make more sense to convert to ps in the future.
-            time = np.linspace(start, end, 36)
+            time = np.linspace(start, end, limit) # Number of points in time is equal to the number of vibrational modes in the Hessian file. (3N)
         
         for idx, Qn in enumerate(Qns):
             #Expands Mol Weights for each dimension in the Norm Modes
@@ -248,7 +249,7 @@ class Hessian:
         #Filling the rest of the List with zeros
         time_as_freq = [0.0 for n in range(dim)]
         for idx, n in enumerate(time):
-            time_as_freq[idx]=n
+            time_as_freq[idx]=n*10**15 # converting from seconds to fs for Chemcraft labeling
         
         #The frequencies are stored in a list of length 3N - same as in the hess_dict
         chiral_dict['vibrational_frequencies']=time_as_freq
